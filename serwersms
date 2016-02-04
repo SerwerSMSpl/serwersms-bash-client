@@ -1,0 +1,82 @@
+#!/bin/bash
+API_URL="https://api2.serwersms.pl/"
+USERNAME=""
+PASSWORD=""
+declare -A options
+params=()
+actions=()
+if [ -f $(dirname $0)/serwersms_auth ]; then
+	source $(dirname $0)/serwersms_auth
+fi
+actions=(messages/send_sms messages/send_personalized messages/send_voice messages/send_mms messages/view messages/reports messages/delete messages/recived messages/send_nd messages/send_ndi account/add account/limits account/help account/messages blacklist/add blacklist/index blacklist/check blacklist/delete contacts/add contacts/index contacts/view contacts/edit contacts/delete contacts/import error/ files/add files/index files/view files/delete groups/add groups/index groups/view groups/edit groups/delete groups/check payments/index payments/view payments/invoice phones/check phones/test premium/index premium/send quiz/view senders/add senders/index stats/index subaccounts/add subaccounts/index subaccounts/view subaccounts/limit subaccounts/delete templates/index templates/add templates/edit templates/delete)
+if [[ $1 != "" ]]; then
+	options[method]="$1";
+	shift
+fi
+while [ ! -z "$1" ]; do
+    if [[ $1 =~ ^--([a-z0-9A-Z\_]+)$ ]]; then
+		options[${BASH_REMATCH[1]}]="$2";
+        shift
+    fi
+    shift
+done
+call() {
+	if [ ${#options[@]} -lt 1 ]; then 
+		info
+	else
+		url="${API_URL}${options[method]}"
+		for i in "${!options[@]}"
+		do
+			if [ $i != "method" ]; then
+				params[${#params[@]}]=$i="${options[$i]}"
+			fi
+		done
+		params[${#params[@]}]=username="$USERNAME"
+		params[${#params[@]}]=password="$PASSWORD"
+		data=$(printf "%s&" "${params[@]}")
+		option=""
+		if [ ${options[method]} == "payments/invoice" ]; then
+			option="-o ${options[facture]}"
+		fi
+		RESULT=$(curl -s "$option" "$url" -d "$data")
+		echo $RESULT
+	fi
+}
+in_array() {
+    local haystack=${1}[@]
+    local needle=${2}
+    for i in ${!haystack}; do
+        if [[ ${i} == ${needle} ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+info() {
+echo "Configuration: Define USERNAME and PASSWORD in serwersms_auth"
+echo "Usage: $ ./serwersms [ACTION] [OPTIONS]"
+echo "ACTION:
+	send_sms
+	send_personalized
+	send_voice
+	...		
+OPTIONS:
+	--phone <string>
+	--text <string>
+	--test <true|false>
+	--details <true|false>
+	--utf <true|false>
+	...
+	
+	All list of action and params is available at http://dev.serwersms.pl"
+	exit 0;
+}
+if [[ ${USERNAME} == "" ||  ${PASSWORD} == "" ]]; then
+	info
+else
+	if in_array actions ${options[method]}; then
+		call
+	else
+		info
+	fi
+fi
