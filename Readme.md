@@ -4,7 +4,7 @@ Klient Bash do komunikacji zdalnej z API v2 SerwerSMS.pl z poziomu terminala.
 Zalecane jest, aby komunikacja przez HTTPS API odbywała się z loginów utworzonych specjalnie do połączenia przez API. Konto użytkownika API można utworzyć w Panelu Klienta → Ustawienia interfejsów → HTTPS XML API → Użytkownicy.
 
 ## Konfiguracja
-Dane autoryzacyjne należy zdefiniować w pliku serwersms_auth, przykładowo:
+Dane autoryzacyjne należy zdefiniować w pliku serwersms, przykładowo:
 ```bash
 USERNAME="demo"
 PASSWORD="demo"

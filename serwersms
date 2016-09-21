@@ -1,7 +1,8 @@
 #!/bin/bash
 API_URL="https://api2.serwersms.pl/"
-USERNAME=""
-PASSWORD=""
+USERNAME="demo"
+PASSWORD="demo"
+CLIENT="client_bash"
 declare -A options
 params=()
 actions=()
@@ -33,6 +34,7 @@ call() {
 		done
 		params[${#params[@]}]=username="$USERNAME"
 		params[${#params[@]}]=password="$PASSWORD"
+		params[${#params[@]}]=system="$CLIENT"
 		data=$(printf "%s&" "${params[@]}")
 		option=""
 		if [ ${options[method]} == "payments/invoice" ]; then
