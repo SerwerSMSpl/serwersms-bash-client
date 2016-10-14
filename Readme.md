@@ -78,3 +78,6 @@ $ ./serwersms subaccounts/add --subaccount_username "username" --subaccount_pass
 
 ## Dokumentacja
 Lista wszystkich metod oraz opcji dostępna jest pod adresem http://dev.serwersms.pl Należy pamiętać o tym, aby parametry tekstowe w wywołaniu osadzić w znakach "".
+
+## Konsola API
+http://apiconsole.serwersms.pl/
