@@ -6,6 +6,10 @@ CLIENT="client_bash"
 declare -A options
 params=()
 actions=()
+urlencode() {
+  python -c 'import urllib, sys; print urllib.quote(sys.argv[1], sys.argv[2])' \
+    "$1" "$urlencode_safe"
+}
 if [ -f $(dirname $0)/serwersms_auth ]; then
 	source $(dirname $0)/serwersms_auth
 fi
@@ -29,7 +33,12 @@ call() {
 		for i in "${!options[@]}"
 		do
 			if [ $i != "method" ]; then
-				params[${#params[@]}]=$i="${options[$i]}"
+				if [ $i == "text" ]; then
+					tmp=$(urlencode "${options[$i]}")
+					params[${#params[@]}]=$i="$tmp"
+				else
+					params[${#params[@]}]=$i="${options[$i]}"
+				fi
 			fi
 		done
 		params[${#params[@]}]=username="$USERNAME"
