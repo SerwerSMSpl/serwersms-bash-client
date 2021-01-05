@@ -6,10 +6,20 @@ CLIENT="client_bash"
 declare -A options
 params=()
 actions=()
-urlencode() {
-  python -c 'import urllib, sys; print urllib.quote(sys.argv[1], sys.argv[2])' \
-    "$1" "$urlencode_safe"
+urlencode_python() {
+  python -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1]))' "$1"
 }
+urlencode() {
+  local length="${#1}"
+  for (( i = 0; i < length; i++ )); do
+    local c="${1:i:1}"
+    case $c in
+      [a-zA-Z0-9.~_-]) printf "$c" ;;
+    *) printf "$c" | xxd -p -c1 | while read x;do printf "%%%s" "$x";done
+  esac
+done
+}
+
 if [ -f $(dirname $0)/serwersms_auth ]; then
 	source $(dirname $0)/serwersms_auth
 fi
@@ -20,7 +30,13 @@ if [[ $1 != "" ]]; then
 fi
 while [ ! -z "$1" ]; do
     if [[ $1 =~ ^--([a-z0-9A-Z\_]+)$ ]]; then
-		options[${BASH_REMATCH[1]}]="$2";
+		val=$2
+		key=${BASH_REMATCH[1]}
+		if [ $key == "text" ]; then
+			val=${val:1}
+			val=${val%?}
+		fi
+		options[$key]="$val";
         shift
     fi
     shift
