@@ -46,8 +46,10 @@ while [ ! -z "$1" ]; do
 		val=$2
 		key=${BASH_REMATCH[1]}
 		if [ $key == "text" ]; then
-			val=${val:1}
-			val=${val%?}
+			if [[ ${val:0:1} == '"' ]] && [[ ${val: -1} == '"' ]] ; then 
+				val=${val:1}
+				val=${val%?}
+			fi
 		fi
 		options[$key]="$val";
         shift
