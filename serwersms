@@ -80,7 +80,7 @@ call() {
 		if [ ${options[method]} == "payments/invoice" ]; then
 			option="-o ${options[facture]}"
 		fi
-		RESULT=$(curl -s "$option" "$url" -d "$data")
+		RESULT=$(curl -s $([ ! -z "$option" ] && echo "$option") "$url" -d "$data")
 		echo $RESULT
 	fi
 }
